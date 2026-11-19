@@ -1,0 +1,1652 @@
+From 70131c430a824f80ac9cd78703e8702b1558fbf4 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 19 Nov 2026 19:10:24 +0000
+Subject: [PATCH] =?UTF-8?q?Hito=201.1:=20base=20de=20la=20migraci=C3=B3n?=
+ =?UTF-8?q?=20a=20Next.js?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Estilos originales (estilos.html) portados 1:1 a app/globals.css
+- Layout con fondo animado, contenedor y overlay de carga
+- Una ruta por pantalla del index.html original (marcadores hasta los hitos 1.2 a 1.4)
+- Tipos por hoja de la planilla, utilidades de Code.gs (fecha, hora, hash, categoría)
+- Sesión en el navegador (rol, DNI, deporte activo)
+- Almacén en memoria con datos de prueba ficticios, persistido en localStorage
+- /dev: mapa de pantallas, filas por hoja y restauración de datos
+- docs/migracion.md
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01SKCrsKqpgPPDtVGm67be28
+---
+ app/admin/alta-alumno/page.tsx     |   5 +
+ app/admin/asistencia/page.tsx      |   5 +
+ app/admin/cargar-datos/page.tsx    |   5 +
+ app/admin/convocatoria/page.tsx    |   5 +
+ app/admin/estadisticas/page.tsx    |   5 +
+ app/admin/page.tsx                 |   5 +
+ app/admin/partidos/nuevo/page.tsx  |   5 +
+ app/admin/partidos/page.tsx        |   5 +
+ app/confirmar/page.tsx             |   5 +
+ app/dev/page.tsx                   |  74 ++++
+ app/externo/page.tsx               |   5 +
+ app/globals.css                    | 660 +++++++++++++++++++++++++++--
+ app/jugador/convocatorias/page.tsx |   5 +
+ app/jugador/dashboard/page.tsx     |   5 +
+ app/jugador/estadisticas/page.tsx  |   5 +
+ app/jugador/page.tsx               |   5 +
+ app/layout.tsx                     |  57 ++-
+ app/page.tsx                       |  24 +-
+ app/registro/externo/page.tsx      |   5 +
+ app/registro/jugador/page.tsx      |   5 +
+ components/PantallaPendiente.tsx   |  30 ++
+ docs/migracion.md                  |  43 ++
+ lib/data/almacen.ts                |  50 +++
+ lib/data/semilla.ts                |  85 ++++
+ lib/formato.ts                     |  68 +++
+ lib/pantallas.ts                   |  36 ++
+ lib/sesion.tsx                     |  67 +++
+ lib/types.ts                       | 101 +++++
+ 28 files changed, 1297 insertions(+), 78 deletions(-)
+ create mode 100644 app/admin/alta-alumno/page.tsx
+ create mode 100644 app/admin/asistencia/page.tsx
+ create mode 100644 app/admin/cargar-datos/page.tsx
+ create mode 100644 app/admin/convocatoria/page.tsx
+ create mode 100644 app/admin/estadisticas/page.tsx
+ create mode 100644 app/admin/page.tsx
+ create mode 100644 app/admin/partidos/nuevo/page.tsx
+ create mode 100644 app/admin/partidos/page.tsx
+ create mode 100644 app/confirmar/page.tsx
+ create mode 100644 app/dev/page.tsx
+ create mode 100644 app/externo/page.tsx
+ create mode 100644 app/jugador/convocatorias/page.tsx
+ create mode 100644 app/jugador/dashboard/page.tsx
+ create mode 100644 app/jugador/estadisticas/page.tsx
+ create mode 100644 app/jugador/page.tsx
+ create mode 100644 app/registro/externo/page.tsx
+ create mode 100644 app/registro/jugador/page.tsx
+ create mode 100644 components/PantallaPendiente.tsx
+ create mode 100644 docs/migracion.md
+ create mode 100644 lib/data/almacen.ts
+ create mode 100644 lib/data/semilla.ts
+ create mode 100644 lib/formato.ts
+ create mode 100644 lib/pantallas.ts
+ create mode 100644 lib/sesion.tsx
+ create mode 100644 lib/types.ts
+
+diff --git a/app/admin/alta-alumno/page.tsx b/app/admin/alta-alumno/page.tsx
+new file mode 100644
+index 0000000..fafdc8b
+--- /dev/null
++++ b/app/admin/alta-alumno/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function AdminAltaAlumno() {
++  return <PantallaPendiente ruta="/admin/alta-alumno" />;
++}
+diff --git a/app/admin/asistencia/page.tsx b/app/admin/asistencia/page.tsx
+new file mode 100644
+index 0000000..9abf061
+--- /dev/null
++++ b/app/admin/asistencia/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function AdminAsistencia() {
++  return <PantallaPendiente ruta="/admin/asistencia" />;
++}
+diff --git a/app/admin/cargar-datos/page.tsx b/app/admin/cargar-datos/page.tsx
+new file mode 100644
+index 0000000..09ce0a9
+--- /dev/null
++++ b/app/admin/cargar-datos/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function AdminCargarDatos() {
++  return <PantallaPendiente ruta="/admin/cargar-datos" />;
++}
+diff --git a/app/admin/convocatoria/page.tsx b/app/admin/convocatoria/page.tsx
+new file mode 100644
+index 0000000..a5ef2ba
+--- /dev/null
++++ b/app/admin/convocatoria/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function AdminConvocatoria() {
++  return <PantallaPendiente ruta="/admin/convocatoria" />;
++}
+diff --git a/app/admin/estadisticas/page.tsx b/app/admin/estadisticas/page.tsx
+new file mode 100644
+index 0000000..7867054
+--- /dev/null
++++ b/app/admin/estadisticas/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function AdminEstadisticas() {
++  return <PantallaPendiente ruta="/admin/estadisticas" />;
++}
+diff --git a/app/admin/page.tsx b/app/admin/page.tsx
+new file mode 100644
+index 0000000..6f6ce46
+--- /dev/null
++++ b/app/admin/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function Admin() {
++  return <PantallaPendiente ruta="/admin" />;
++}
+diff --git a/app/admin/partidos/nuevo/page.tsx b/app/admin/partidos/nuevo/page.tsx
+new file mode 100644
+index 0000000..e8e4b72
+--- /dev/null
++++ b/app/admin/partidos/nuevo/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function AdminPartidosNuevo() {
++  return <PantallaPendiente ruta="/admin/partidos/nuevo" />;
++}
+diff --git a/app/admin/partidos/page.tsx b/app/admin/partidos/page.tsx
+new file mode 100644
+index 0000000..92c3edb
+--- /dev/null
++++ b/app/admin/partidos/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function AdminPartidos() {
++  return <PantallaPendiente ruta="/admin/partidos" />;
++}
+diff --git a/app/confirmar/page.tsx b/app/confirmar/page.tsx
+new file mode 100644
+index 0000000..8533af7
+--- /dev/null
++++ b/app/confirmar/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function Confirmar() {
++  return <PantallaPendiente ruta="/confirmar" />;
++}
+diff --git a/app/dev/page.tsx b/app/dev/page.tsx
+new file mode 100644
+index 0000000..36b1f7e
+--- /dev/null
++++ b/app/dev/page.tsx
+@@ -0,0 +1,74 @@
++"use client";
++// Pantalla de desarrollo (no existía en el original): mapa de pantallas migradas
++// y estado de los datos de prueba de la etapa 1.
++import Link from "next/link";
++import { useEffect, useState } from "react";
++import { PANTALLAS } from "@/lib/pantallas";
++import { obtenerDb, reiniciarDb } from "@/lib/data/almacen";
++import type { Db } from "@/lib/types";
++
++const HOJAS: [keyof Db, string][] = [
++  ["usuarios", "USUARIOS"],
++  ["jugadoresGeneral", "JUGADORES_GENERAL"],
++  ["jugadoresDeportes", "JUGADORES_DEPORTES"],
++  ["asistencia", "Asistencia"],
++  ["partidos", "PARTIDOS"],
++  ["convocatorias", "CONVOCATORIAS"],
++  ["estadisticasPartidos", "ESTADISTICAS_PARTIDOS"],
++  ["equipos", "EQUIPOS"],
++];
++
++export default function Dev() {
++  const [conteos, setConteos] = useState<Record<string, number> | null>(null);
++
++  const contar = () => {
++    const db = obtenerDb();
++    setConteos(Object.fromEntries(HOJAS.map(([k]) => [k, db[k].length])));
++  };
++
++  useEffect(contar, []);
++
++  return (
++    <div className="screen active">
++      <div className="nav-bar">
++        <span>Mapa de migración</span>
++        <Link className="nav-btn" href="/">
++          Inicio
++        </Link>
++      </div>
++
++      <h2>Pantallas</h2>
++      <p className="subtitle">Etapa 1: copia 1:1 de FieldStats 5.3 con datos de prueba.</p>
++      {PANTALLAS.map((p) => (
++        <Link key={p.ruta} href={p.ruta} className="player-row" style={{ color: "inherit", textDecoration: "none" }}>
++          <span>{p.titulo}</span>
++          <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
++            {p.ruta} · hito {p.hito}
++          </span>
++        </Link>
++      ))}
++
++      <h2 style={{ marginTop: 32 }}>Datos de prueba</h2>
++      <p className="subtitle" style={{ marginBottom: 16 }}>
++        Se guardan en este navegador. Son ficticios.
++      </p>
++      {conteos &&
++        HOJAS.map(([k, hoja]) => (
++          <div key={k} className="player-row">
++            <span>{hoja}</span>
++            <span>{conteos[k]} filas</span>
++          </div>
++        ))}
++      <button
++        className="btn btn-outline"
++        style={{ marginTop: 20 }}
++        onClick={() => {
++          reiniciarDb();
++          contar();
++        }}
++      >
++        Restaurar datos de prueba
++      </button>
++    </div>
++  );
++}
+diff --git a/app/externo/page.tsx b/app/externo/page.tsx
+new file mode 100644
+index 0000000..331d050
+--- /dev/null
++++ b/app/externo/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function Externo() {
++  return <PantallaPendiente ruta="/externo" />;
++}
+diff --git a/app/globals.css b/app/globals.css
+index e9c0db0..fe43fda 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -1,72 +1,654 @@
++/* Portado 1:1 desde estilos.html (FieldStats 5.3, Google Apps Script). */
++/* ═══════════════════════════════════════════
++   FIELDSTATS — BRAND BOOK DESIGN SYSTEM
++   Verde Energía · Azul Profundo · Dorado
++═══════════════════════════════════════════ */
+ 
++:root {
++  /* ── Brand Palette ── */
++  --color-azul-profundo:  #0D1B2A;
++  --color-azul-enfoque:   #1B365D;
++  --color-verde-campo:    #2E7032;
++  --color-verde-energia:  #4CAF50;
++  --color-dorado:         #DAA837;
++  --color-gris-neutro:    #6D7280;
++
++  /* ── Semantic Tokens ── */
++  --primary:        #4CAF50;
++  --primary-hover:  #2E7032;
++  --bg:             #0D1B2A;
++  --surface:        rgba(14, 26, 40, 0.88);
++  --surface-card:   rgba(18, 32, 50, 0.9);
++  --text:           #EDF2F7;
++  --text-muted:     #7A94AA;
++  --success:        #4CAF50;
++  --danger:         #EF4444;
++  --border:         rgba(76, 175, 80, 0.14);
++  --border-hover:   rgba(76, 175, 80, 0.65);
++  --radius:         18px;
++  --radius-sm:      10px;
++
++  /* ── Neon Glows ── */
++  --neon-verde:  0 0 10px rgba(76,175,80,0.55), 0 0 28px rgba(76,175,80,0.22);
++  --neon-dorado: 0 0 10px rgba(218,168,55,0.55), 0 0 28px rgba(218,168,55,0.22);
++  --shadow:      0 6px 28px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.3);
++}
++
++/* ── RESET ── */
+ * {
+   box-sizing: border-box;
++  margin: 0;
++  padding: 0;
++  font-family: 'Outfit', 'Inter', sans-serif;
+ }
+ 
+-html,
++/* ══════════════════════════════════
++   DYNAMIC BACKGROUND
++══════════════════════════════════ */
+ body {
+-  margin: 0;
+-  min-height: 100%;
++  background-color: var(--bg);
++  color: var(--text);
++  display: flex;
++  justify-content: center;
++  min-height: 100vh;
++  padding: 20px;
++  position: relative;
++  overflow-x: hidden;
+ }
+ 
+-body {
+-  font-family: Arial, Helvetica, sans-serif;
+-  background: #101827;
+-  color: #ffffff;
++/* Subtle grid overlay */
++body::before {
++  content: '';
++  position: fixed;
++  inset: 0;
++  background-image:
++    linear-gradient(rgba(76,175,80,0.025) 1px, transparent 1px),
++    linear-gradient(90deg, rgba(76,175,80,0.025) 1px, transparent 1px);
++  background-size: 44px 44px;
++  pointer-events: none;
++  z-index: 0;
+ }
+ 
+-.welcome {
+-  min-height: 100vh;
+-  display: flex;
+-  align-items: center;
+-  justify-content: center;
+-  padding: 32px;
++/* Floating ambient orbs */
++.bg-orb {
++  position: fixed;
++  border-radius: 50%;
++  pointer-events: none;
++  z-index: 0;
++  will-change: transform, opacity;
++}
++
++.bg-orb-1 {
++  width: 700px; height: 700px;
++  background: radial-gradient(circle at 40% 40%, rgba(76,175,80,0.13) 0%, transparent 65%);
++  top: -250px; left: -200px;
++  animation: orbFloat1 30s ease-in-out infinite;
+ }
+ 
+-.content {
++.bg-orb-2 {
++  width: 560px; height: 560px;
++  background: radial-gradient(circle at 60% 60%, rgba(27,54,93,0.5) 0%, transparent 65%);
++  bottom: -180px; right: -180px;
++  animation: orbFloat2 38s ease-in-out infinite;
++}
++
++.bg-orb-3 {
++  width: 420px; height: 420px;
++  background: radial-gradient(circle at 50% 50%, rgba(218,168,55,0.09) 0%, transparent 65%);
++  top: 45%; left: 45%;
++  animation: orbFloat3 24s ease-in-out infinite;
++}
++
++@keyframes orbFloat1 {
++  0%,100% { transform: translate(0,0) scale(1);      opacity: .8; }
++  25%      { transform: translate(130px,90px) scale(1.15); opacity: 1; }
++  50%      { transform: translate(70px,220px) scale(.9);  opacity: .6; }
++  75%      { transform: translate(190px,130px) scale(1.1);opacity: .9; }
++}
++@keyframes orbFloat2 {
++  0%,100% { transform: translate(0,0) scale(1);       opacity: .7; }
++  30%      { transform: translate(-110px,-90px) scale(1.2); opacity: 1; }
++  60%      { transform: translate(-55px,-175px) scale(.85); opacity: .5; }
++  80%      { transform: translate(-150px,-70px) scale(1.05);opacity: .8; }
++}
++@keyframes orbFloat3 {
++  0%,100% { transform: translate(-50%,-50%) scale(1);   opacity: .6; }
++  40%      { transform: translate(-30%,-70%) scale(1.3); opacity: .9; }
++  70%      { transform: translate(-70%,-30%) scale(.8);  opacity: .4; }
++}
++
++/* ══════════════════════════════════
++   APP SHELL
++══════════════════════════════════ */
++.app-container {
+   width: 100%;
+-  max-width: 680px;
++  max-width: 480px;
++  position: relative;
++  z-index: 1;
+ }
+ 
+-.eyebrow {
+-  font-size: 12px;
+-  letter-spacing: 3px;
+-  color: #9caec5;
++/* ── SCREENS ── */
++.screen {
++  display: none;
++  background: var(--surface);
++  backdrop-filter: blur(24px);
++  -webkit-backdrop-filter: blur(24px);
++  padding: 32px;
++  border-radius: var(--radius);
++  border: 1px solid var(--border);
++  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.04);
++  position: relative;
++  overflow: hidden;
++}
++
++/* Top glow line */
++.screen::before {
++  content: '';
++  position: absolute;
++  top: 0; left: 12%; right: 12%;
++  height: 1px;
++  background: linear-gradient(90deg, transparent, rgba(76,175,80,0.6), rgba(218,168,55,0.35), transparent);
++}
++
++.screen.active {
++  display: block;
++  animation: screenIn 0.38s cubic-bezier(0.22, 1, 0.36, 1);
++}
++
++@keyframes screenIn {
++  from { opacity: 0; transform: translateY(18px) scale(0.975); }
++  to   { opacity: 1; transform: translateY(0) scale(1); }
++}
++
++/* ══════════════════════════════════
++   TYPOGRAPHY
++══════════════════════════════════ */
++h1, h2 {
++  font-family: 'Outfit', sans-serif;
++  font-weight: 700;
++  color: var(--text);
++  margin-bottom: 8px;
++  letter-spacing: -0.025em;
+ }
+ 
+ h1 {
+-  font-size: clamp(48px, 10vw, 84px);
+-  margin: 20px 0;
+-  letter-spacing: -4px;
++  font-size: 30px;
++  color: var(--color-verde-energia);
++  text-shadow: 0 0 24px rgba(76, 175, 80, 0.45), 0 2px 8px rgba(0, 0, 0, 0.4);
++  -webkit-text-fill-color: var(--color-verde-energia);
+ }
+ 
+-.description {
+-  color: #c2ccda;
+-  font-size: 18px;
+-  line-height: 1.6;
++h2 { font-size: 24px; }
++
++.subtitle {
++  color: var(--text-muted);
++  font-size: 15px;
++  margin-bottom: 32px;
++}
++
++/* ══════════════════════════════════
++   INPUTS
++══════════════════════════════════ */
++.input-group { margin-bottom: 20px; }
++
++.input-group label {
++  display: block;
++  font-size: 11.5px;
++  font-weight: 600;
++  margin-bottom: 8px;
++  color: var(--text-muted);
++  text-transform: uppercase;
++  letter-spacing: 0.07em;
++}
++
++input[type="text"],
++input[type="password"],
++input[type="number"],
++input[type="date"],
++input[type="time"] {
++  width: 100%;
++  padding: 12px 16px;
++  background: rgba(255,255,255,0.04);
++  border: 1px solid rgba(76,175,80,0.2);
++  border-radius: var(--radius-sm);
++  font-size: 15px;
++  color: var(--text);
++  outline: none;
++  transition: border-color .25s, box-shadow .25s, background .25s;
++  font-family: 'Outfit', sans-serif;
++}
++
++input::placeholder { color: rgba(122,148,170,0.45); }
++
++input:focus {
++  border-color: var(--color-verde-energia);
++  background: rgba(76,175,80,0.05);
++  box-shadow: 0 0 0 3px rgba(76,175,80,0.15), var(--neon-verde);
++}
++
++/* ══════════════════════════════════
++   BUTTONS
++══════════════════════════════════ */
++.btn {
++  width: 100%;
++  padding: 14px;
++  border-radius: var(--radius-sm);
++  font-size: 16px;
++  font-weight: 600;
++  cursor: pointer;
++  border: none;
++  transition: all .28s cubic-bezier(0.34,1.56,0.64,1);
++  font-family: 'Outfit', sans-serif;
++  letter-spacing: 0.01em;
++  position: relative;
++  overflow: hidden;
++}
++
++.btn::after {
++  content: '';
++  position: absolute;
++  inset: 0;
++  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 55%);
++  opacity: 0;
++  transition: opacity .2s;
++  border-radius: inherit;
++}
++.btn:hover::after { opacity: 1; }
++
++.btn-primary {
++  background: linear-gradient(135deg, var(--color-verde-energia) 0%, var(--color-verde-campo) 100%);
++  color: #fff;
++  box-shadow: 0 4px 16px rgba(76,175,80,0.32);
++}
++.btn-primary:hover {
++  transform: translateY(-3px) scale(1.01);
++  box-shadow: var(--neon-verde), 0 8px 24px rgba(76,175,80,0.38);
++}
++.btn-primary:active { transform: translateY(0) scale(1); }
++
++.btn-outline {
++  background: transparent;
++  border: 1px solid rgba(76,175,80,0.28);
++  color: var(--text);
++}
++.btn-outline:hover {
++  background: rgba(76,175,80,0.08);
++  border-color: var(--color-verde-energia);
++  box-shadow: 0 0 0 1px rgba(76,175,80,0.28);
++  transform: translateY(-1px);
++}
++
++/* ══════════════════════════════════
++   NAV BAR
++══════════════════════════════════ */
++.nav-bar {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  margin-bottom: 24px;
++  padding-bottom: 16px;
++  border-bottom: 1px solid rgba(76,175,80,0.1);
++}
++
++.nav-btn {
++  background: none;
++  border: none;
++  color: var(--color-verde-energia);
++  font-weight: 600;
++  cursor: pointer;
++  font-size: 14px;
++  padding: 7px 14px;
++  border-radius: 8px;
++  transition: background .2s, box-shadow .2s, transform .2s;
++  font-family: 'Outfit', sans-serif;
++  display: flex;
++  align-items: center;
++  gap: 5px;
++}
++.nav-btn:hover {
++  background: rgba(76,175,80,0.1);
++  box-shadow: 0 0 10px rgba(76,175,80,0.2);
++  transform: translateY(-1px);
++}
++
++/* ══════════════════════════════════
++   ACTION CARDS
++══════════════════════════════════ */
++.action-card {
++  padding: 18px 20px;
++  border: 1px solid var(--border);
++  border-radius: 14px;
++  margin-bottom: 14px;
++  cursor: pointer;
++  transition: all .32s cubic-bezier(0.34,1.56,0.64,1);
++  background: var(--surface-card);
++  position: relative;
++  overflow: hidden;
++}
++
++/* Inner gradient reveal on hover */
++.action-card::before {
++  content: '';
++  position: absolute;
++  inset: 0;
++  background: linear-gradient(135deg, rgba(76,175,80,0.07) 0%, transparent 65%);
++  opacity: 0;
++  transition: opacity .3s ease;
++  border-radius: inherit;
++  pointer-events: none;
++}
++
++.action-card:hover {
++  border-color: var(--color-verde-energia);
++  box-shadow: var(--neon-verde), 0 10px 34px rgba(0,0,0,0.32);
++  transform: translateY(-5px) scale(1.015);
++}
++.action-card:hover::before { opacity: 1; }
++
++.action-card h3 {
++  font-size: 17px;
++  font-weight: 600;
++  margin-bottom: 4px;
++  display: flex;
++  align-items: center;
++  gap: 12px;
++  color: var(--text);
++  font-family: 'Outfit', sans-serif;
++  letter-spacing: -0.01em;
+ }
+ 
+-.status {
++/* ── Menu Icon Badge ── */
++.menu-icon {
+   display: inline-flex;
+   align-items: center;
+-  gap: 10px;
+-  margin-top: 32px;
++  justify-content: center;
++  width: 38px; height: 38px;
++  border-radius: 10px;
++  background: rgba(76,175,80,0.14);
++  color: var(--color-verde-energia);
++  flex-shrink: 0;
++  transition: background .3s, box-shadow .3s;
++}
++.action-card:hover .menu-icon {
++  background: rgba(76,175,80,0.26);
++  box-shadow: 0 0 12px rgba(76,175,80,0.38);
++}
++
++.menu-icon.gold {
++  background: rgba(218,168,55,0.14);
++  color: var(--color-dorado);
++}
++.action-card:hover .menu-icon.gold {
++  background: rgba(218,168,55,0.26);
++  box-shadow: 0 0 12px rgba(218,168,55,0.38);
++}
++
++/* Inline icon (for modal titles, warnings, etc.) */
++.inline-icon {
++  vertical-align: middle;
++  display: inline-block;
++}
++
++/* ══════════════════════════════════
++   SELECTORS
++══════════════════════════════════ */
++.selector {
++  width: 100%;
+   padding: 12px 16px;
+-  border: 1px solid #34445b;
++  border: 1px solid rgba(76,175,80,0.2);
++  border-radius: var(--radius-sm);
++  font-size: 15px;
++  background: rgba(255,255,255,0.04);
++  color: var(--text);
++  margin-bottom: 16px;
++  outline: none;
++  transition: border-color .25s, box-shadow .25s;
++  cursor: pointer;
++  font-family: 'Outfit', sans-serif;
++}
++.selector:focus {
++  border-color: var(--color-verde-energia);
++  box-shadow: 0 0 0 3px rgba(76,175,80,0.15);
++}
++.selector option { background: #1a2d42; }
++
++/* ══════════════════════════════════
++   PLAYER ROWS
++══════════════════════════════════ */
++.player-row {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  padding: 14px 16px;
++  border-bottom: 1px solid rgba(76,175,80,0.07);
++  transition: background .2s;
++  border-radius: 8px;
++}
++.player-row:last-child { border-bottom: none; }
++.player-row:hover { background: rgba(76,175,80,0.04); }
++
++/* ══════════════════════════════════
++   TOGGLE SWITCH
++══════════════════════════════════ */
++.toggle-switch { position: relative; width: 50px; height: 28px; }
++.toggle-switch input { opacity: 0; width: 0; height: 0; }
++
++.slider {
++  position: absolute;
++  cursor: pointer;
++  inset: 0;
++  background: rgba(255,255,255,0.1);
++  border: 1px solid rgba(255,255,255,0.12);
++  transition: .32s cubic-bezier(0.34,1.56,0.64,1);
++  border-radius: 28px;
++}
++.slider::before {
++  position: absolute;
++  content: "";
++  height: 20px; width: 20px;
++  left: 4px; bottom: 3px;
++  background: #fff;
++  transition: .32s cubic-bezier(0.34,1.56,0.64,1);
++  border-radius: 50%;
++  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
++}
++input:checked + .slider {
++  background: var(--color-verde-energia);
++  border-color: var(--color-verde-energia);
++  box-shadow: 0 0 10px rgba(76,175,80,0.55);
++}
++input:checked + .slider::before { transform: translateX(22px); }
++
++/* ══════════════════════════════════
++   TOGGLE TABS
++══════════════════════════════════ */
++.toggle-group {
++  display: flex;
++  background: rgba(0,0,0,0.3);
++  padding: 4px;
++  border-radius: 12px;
++  margin-bottom: 20px;
++  border: 1px solid rgba(76,175,80,0.1);
++  gap: 2px;
++}
++
++.toggle-option {
++  flex: 1;
++  text-align: center;
++  padding: 10px;
+   border-radius: 8px;
+-  color: #dce6f2;
+-  font-size: 13px;
++  cursor: pointer;
++  font-size: 14px;
++  color: var(--text-muted);
++  transition: all .25s ease;
++  font-weight: 500;
++  font-family: 'Outfit', sans-serif;
++}
++.toggle-option.active {
++  background: linear-gradient(135deg, var(--color-verde-energia), var(--color-verde-campo));
++  color: #fff;
++  box-shadow: 0 2px 12px rgba(76,175,80,0.45), var(--neon-verde);
++}
++.toggle-option:hover:not(.active) {
++  background: rgba(76,175,80,0.08);
++  color: var(--text);
++}
++
++/* ══════════════════════════════════
++   LOADING OVERLAY
++══════════════════════════════════ */
++#loading-overlay {
++  display: none;
++  position: fixed;
++  inset: 0;
++  background: rgba(13,27,42,0.92);
++  backdrop-filter: blur(10px);
++  z-index: 1000;
++  justify-content: center;
++  align-items: center;
++  flex-direction: column;
++  gap: 14px;
++  font-weight: 700;
++  font-size: 17px;
++  color: var(--color-verde-energia);
++  letter-spacing: 0.06em;
++  font-family: 'Outfit', sans-serif;
+ }
+ 
+-.status-dot {
+-  width: 8px;
+-  height: 8px;
++/* Spinner ring */
++#loading-overlay::after {
++  content: '';
++  width: 42px; height: 42px;
++  border: 3px solid rgba(76,175,80,0.18);
++  border-top-color: var(--color-verde-energia);
+   border-radius: 50%;
+-  background: #55c58b;
++  animation: spin .75s linear infinite;
++}
++
++@keyframes spin { to { transform: rotate(360deg); } }
++
++/* ══════════════════════════════════
++   MODAL
++══════════════════════════════════ */
++.modal {
++  display: none;
++  position: fixed;
++  inset: 0;
++  background: rgba(0,0,0,0.72);
++  backdrop-filter: blur(10px);
++  z-index: 2000;
++  justify-content: center;
++  align-items: center;
++}
++
++.modal-content {
++  background: rgba(14,26,42,0.97);
++  border: 1px solid rgba(76,175,80,0.32);
++  padding: 28px;
++  border-radius: 18px;
++  width: 90%;
++  max-width: 400px;
++  box-shadow: var(--neon-verde), var(--shadow);
++  animation: screenIn .3s ease;
++  position: relative;
++  overflow: hidden;
++}
++.modal-content::before {
++  content: '';
++  position: absolute;
++  top: 0; left: 10%; right: 10%;
++  height: 1px;
++  background: linear-gradient(90deg, transparent, rgba(76,175,80,0.7), transparent);
+ }
+ 
+-.version {
+-  margin-top: 48px;
+-  color: #8191a8;
++.modal-content h3 {
++  font-family: 'Outfit', sans-serif;
++  font-weight: 700;
++  margin-bottom: 20px;
++  color: var(--text);
++  display: flex;
++  align-items: center;
++  gap: 10px;
++  font-size: 18px;
++}
++
++/* ══════════════════════════════════
++   STAT CARDS (PREMIUM)
++══════════════════════════════════ */
++.stats-grid-2col {
++  display: grid;
++  grid-template-columns: 1fr 1fr;
++  gap: 12px;
++  margin-bottom: 12px;
++}
++
++.stat-card-premium {
++  background: rgba(18,32,50,0.9);
++  border: 1px solid rgba(76,175,80,0.1);
++  border-radius: 16px;
++  padding: 16px;
++  margin-bottom: 12px;
++  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
++}
++.stat-card-premium:hover {
++  transform: translateY(-3px);
++  border-color: var(--color-verde-energia);
++  box-shadow: var(--neon-verde);
++}
++
++.stat-icon-wrapper {
++  display: flex;
++  align-items: center;
++  justify-content: center;
++  width: 38px; height: 38px;
++  border-radius: 10px;
++  flex-shrink: 0;
++}
++.stat-icon-wrapper.blue   { background: rgba(27,54,93,0.45);   color: #64b5f6; }
++.stat-icon-wrapper.orange { background: rgba(218,168,55,0.14); color: var(--color-dorado); }
++.stat-icon-wrapper.green  { background: rgba(76,175,80,0.14);  color: var(--color-verde-energia); }
++.stat-icon-wrapper.purple { background: rgba(168,85,247,0.14); color: #a855f7; }
++.stat-icon-wrapper.yellow { background: rgba(218,168,55,0.14); color: var(--color-dorado); }
++
++.stat-card-value {
++  font-size: 32px;
++  font-weight: 700;
++  color: #fff;
++  line-height: 1;
++  margin-top: 4px;
++  font-family: 'Outfit', sans-serif;
++}
++
++.progress-blocks-container { display: flex; gap: 4px; width: 100%; }
++
++.progress-block {
++  flex: 1; height: 8px;
++  border-radius: 4px;
++  background: rgba(76,175,80,0.1);
++  transition: background .3s;
++}
++.progress-block.active {
++  background: linear-gradient(90deg, var(--color-verde-energia), var(--color-verde-campo));
++  box-shadow: 0 0 7px rgba(76,175,80,0.55);
++}
++
++.stats-footer-info {
++  display: flex;
++  align-items: center;
++  gap: 6px;
+   font-size: 12px;
++  color: var(--text-muted);
++  margin-top: 16px;
++  justify-content: center;
+ }
++
++/* ══════════════════════════════════
++   SCROLLBAR
++══════════════════════════════════ */
++::-webkit-scrollbar { width: 5px; }
++::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
++::-webkit-scrollbar-thumb { background: rgba(76,175,80,0.3); border-radius: 10px; }
++::-webkit-scrollbar-thumb:hover { background: rgba(76,175,80,0.55); }
++
++/* Agregado en la migración: los botones de navegación ahora son enlaces de Next.js. */
++a.nav-btn { text-decoration: none; }
+diff --git a/app/jugador/convocatorias/page.tsx b/app/jugador/convocatorias/page.tsx
+new file mode 100644
+index 0000000..2fc2289
+--- /dev/null
++++ b/app/jugador/convocatorias/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function JugadorConvocatorias() {
++  return <PantallaPendiente ruta="/jugador/convocatorias" />;
++}
+diff --git a/app/jugador/dashboard/page.tsx b/app/jugador/dashboard/page.tsx
+new file mode 100644
+index 0000000..c90fd06
+--- /dev/null
++++ b/app/jugador/dashboard/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function JugadorDashboard() {
++  return <PantallaPendiente ruta="/jugador/dashboard" />;
++}
+diff --git a/app/jugador/estadisticas/page.tsx b/app/jugador/estadisticas/page.tsx
+new file mode 100644
+index 0000000..1c8d615
+--- /dev/null
++++ b/app/jugador/estadisticas/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function JugadorEstadisticas() {
++  return <PantallaPendiente ruta="/jugador/estadisticas" />;
++}
+diff --git a/app/jugador/page.tsx b/app/jugador/page.tsx
+new file mode 100644
+index 0000000..6bbb6ab
+--- /dev/null
++++ b/app/jugador/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function Jugador() {
++  return <PantallaPendiente ruta="/jugador" />;
++}
+diff --git a/app/layout.tsx b/app/layout.tsx
+index 08a715e..ab36b96 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -1,20 +1,37 @@
+-
+-import type { Metadata } from "next";
+-import "./globals.css";
+-
+-export const metadata: Metadata = {
+-  title: "FieldStats",
+-  description: "Plataforma de gestión deportiva"
+-};
+-
+-export default function RootLayout({
+-  children,
+-}: Readonly<{
+-  children: React.ReactNode;
+-}>) {
+-  return (
+-    <html lang="es">
+-      <body>{children}</body>
+-    </html>
+-  );
+-}
++import type { Metadata, Viewport } from "next";
++import { ProveedorSesion } from "@/lib/sesion";
++import "./globals.css";
++
++export const metadata: Metadata = {
++  title: "FieldStats MVP",
++  description: "Plataforma de gestión deportiva",
++};
++
++export const viewport: Viewport = {
++  width: "device-width",
++  initialScale: 1,
++};
++
++export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
++  return (
++    <html lang="es">
++      <head>
++        <link rel="preconnect" href="https://fonts.googleapis.com" />
++        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
++        <link
++          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
++          rel="stylesheet"
++        />
++      </head>
++      <body>
++        {/* Fondo dinámico animado - FieldStats Brand */}
++        <div className="bg-orb bg-orb-1" />
++        <div className="bg-orb bg-orb-2" />
++        <div className="bg-orb bg-orb-3" />
++        <ProveedorSesion>
++          <div className="app-container">{children}</div>
++        </ProveedorSesion>
++      </body>
++    </html>
++  );
++}
+diff --git a/app/page.tsx b/app/page.tsx
+index 2360c8a..2422cac 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -1,19 +1,5 @@
+-
+-export default function Home() {
+-  return (
+-    <main className="welcome">
+-      <div className="content">
+-        <p className="eyebrow">SPORTS MANAGEMENT PLATFORM</p>
+-        <h1>FieldStats</h1>
+-        <p className="description">
+-          Plataforma de gestión y seguimiento de competencias deportivas.
+-        </p>
+-        <div className="status">
+-          <span className="status-dot" />
+-          Entorno de desarrollo inicializado
+-        </div>
+-        <p className="version">Release Candidate · V0.1</p>
+-      </div>
+-    </main>
+-  );
+-}
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function Inicio() {
++  return <PantallaPendiente ruta="/" />;
++}
+diff --git a/app/registro/externo/page.tsx b/app/registro/externo/page.tsx
+new file mode 100644
+index 0000000..d4974ae
+--- /dev/null
++++ b/app/registro/externo/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function RegistroExterno() {
++  return <PantallaPendiente ruta="/registro/externo" />;
++}
+diff --git a/app/registro/jugador/page.tsx b/app/registro/jugador/page.tsx
+new file mode 100644
+index 0000000..edb3c83
+--- /dev/null
++++ b/app/registro/jugador/page.tsx
+@@ -0,0 +1,5 @@
++import PantallaPendiente from "@/components/PantallaPendiente";
++
++export default function RegistroJugador() {
++  return <PantallaPendiente ruta="/registro/jugador" />;
++}
+diff --git a/components/PantallaPendiente.tsx b/components/PantallaPendiente.tsx
+new file mode 100644
+index 0000000..f1f7989
+--- /dev/null
++++ b/components/PantallaPendiente.tsx
+@@ -0,0 +1,30 @@
++"use client";
++// Marcador temporal para las pantallas que se portan en los hitos 1.2 a 1.4.
++import Link from "next/link";
++import { pantalla } from "@/lib/pantallas";
++
++export default function PantallaPendiente({ ruta }: { ruta: string }) {
++  const p = pantalla(ruta);
++  return (
++    <div className="screen active">
++      <div className="nav-bar">
++        {p.volver !== null ? (
++          <Link className="nav-btn" href={p.volver}>
++            ← Volver
++          </Link>
++        ) : (
++          <span>FieldStats</span>
++        )}
++        <Link className="nav-btn" href="/dev">
++          Mapa
++        </Link>
++      </div>
++      <h2>{p.titulo}</h2>
++      <p className="subtitle">
++        Pantalla en migración: se porta en el hito {p.hito}.
++        <br />
++        Origen: <code>{p.original}</code>
++      </p>
++    </div>
++  );
++}
+diff --git a/docs/migracion.md b/docs/migracion.md
+new file mode 100644
+index 0000000..3de6fd4
+--- /dev/null
++++ b/docs/migracion.md
+@@ -0,0 +1,43 @@
++# Migración de FieldStats 5.3 (Apps Script) a Next.js
++
++## Etapa 1: copia 1:1, sin base de datos
++
++La versión de fútbol y handball se porta tal como está, con la misma lógica y las mismas fallas de seguridad conocidas (se corrigen en una etapa posterior). No queda en uso real: los datos son de prueba y viven en el navegador.
++
++| Hito | Contenido | Estado |
++|---|---|---|
++| 1.1 | Estilos, rutas, sesión, capa de datos en memoria, semilla | Hecho |
++| 1.2 | Login, activación de jugador, registro y confirmación de padres | Pendiente |
++| 1.3 | Panel del profesor: alta de alumno, asistencia, partidos, convocatoria, carga de goles | Pendiente |
++| 1.4 | Jugador: convocatorias, estadísticas; fixture, tabla y ranking | Pendiente |
++| 1.5 | Build, chequeo de tipos, despliegue en Vercel | Pendiente |
++
++## Estructura
++
++| Archivo | Rol | Origen |
++|---|---|---|
++| `app/globals.css` | Estilos | `estilos.html`, sin cambios |
++| `app/layout.tsx` | Fondo, contenedor, overlay de carga | cabecera de `index.html` |
++| `app/**/page.tsx` | Una ruta por pantalla (mapa en `lib/pantallas.ts`) | cada `screen-*` de `index.html` |
++| `lib/types.ts` | Una interfaz por hoja de la planilla | Google Sheets |
++| `lib/formato.ts` | Fecha, hora, hash de contraseña, categoría | `Code.gs` |
++| `lib/sesion.tsx` | Rol, DNI, deporte activo, estado de carga | variables globales de `funcionees.html` |
++| `lib/data/almacen.ts` | Base en memoria, persistida en `localStorage` | reemplaza `SpreadsheetApp` |
++| `lib/data/semilla.ts` | Datos de prueba ficticios | — |
++
++`/dev` muestra el mapa de pantallas, la cantidad de filas por hoja y un botón para restaurar los datos de prueba.
++
++## Usuarios de prueba
++
++| Usuario | Contraseña | Rol |
++|---|---|---|
++| `profesor@demo.com` | `profe123` | profesor |
++| `padre@demo.com` | `padre123` | externo |
++| DNI `90000001` a `90000005` | `jugador123` | jugador |
++| DNI `90000006` | se activa con token `JUGADOR2026` | jugador sin activar |
++
++El login del original también acepta `hernan` / `profe123` como profesor; se mantiene en la copia 1:1.
++
++## Etapa 2
++
++La capa de datos se reemplaza por Supabase con el esquema de gimnasia (`Supabase.sql` + `fieldstats_patch_v0_2.sql`), y la sesión por Supabase Auth.
+diff --git a/lib/data/almacen.ts b/lib/data/almacen.ts
+new file mode 100644
+index 0000000..f6015df
+--- /dev/null
++++ b/lib/data/almacen.ts
+@@ -0,0 +1,50 @@
++// Almacén en memoria que reemplaza al Google Sheets durante la etapa 1.
++// Vive en el navegador y se guarda en localStorage para sobrevivir a una recarga.
++// En la etapa 2 se reemplaza por Supabase; las pantallas no acceden a este módulo
++// directamente sino a través de la API de datos (lib/data/api.ts, hitos 1.2 a 1.4).
++import type { Db } from "../types";
++import { crearSemilla } from "./semilla";
++
++const CLAVE = "fieldstats-demo-db-v1";
++
++let db: Db | null = null;
++
++function cargar(): Db {
++  try {
++    const guardado = window.localStorage.getItem(CLAVE);
++    if (guardado) return JSON.parse(guardado) as Db;
++  } catch {
++    // localStorage no disponible o datos corruptos: se usa la semilla.
++  }
++  return crearSemilla();
++}
++
++/** Devuelve la base en memoria (la carga en el primer uso). Solo en el navegador. */
++export function obtenerDb(): Db {
++  if (typeof window === "undefined") {
++    throw new Error("El almacén de datos de la etapa 1 solo funciona en el navegador.");
++  }
++  if (!db) db = cargar();
++  return db;
++}
++
++/** Persiste los cambios hechos sobre la base devuelta por obtenerDb(). */
++export function guardarDb(): void {
++  if (!db) return;
++  try {
++    window.localStorage.setItem(CLAVE, JSON.stringify(db));
++  } catch {
++    // Sin persistencia: los datos siguen en memoria hasta recargar.
++  }
++}
++
++/** Vuelve a los datos de prueba originales. */
++export function reiniciarDb(): void {
++  db = crearSemilla();
++  guardarDb();
++}
++
++/** Simula la latencia de google.script.run para que las pantallas manejen el estado de carga. */
++export function demora<T>(valor: T, ms = 150): Promise<T> {
++  return new Promise((resolve) => setTimeout(() => resolve(valor), ms));
++}
+diff --git a/lib/data/semilla.ts b/lib/data/semilla.ts
+new file mode 100644
+index 0000000..56c0c6a
+--- /dev/null
++++ b/lib/data/semilla.ts
+@@ -0,0 +1,85 @@
++// Datos de prueba FICTICIOS para la etapa 1. No contienen datos reales de alumnos.
++// Contraseñas de prueba (hash SHA-256 con la sal del original):
++//   profesor@demo.com / profe123     padre@demo.com / padre123
++//   jugadores activados (DNI 90000001 a 90000005) / jugador123
++//   DNI 90000006: jugador sin activar (token JUGADOR2026)
++import type { Db } from "../types";
++
++const HASH_PROFE = "f17506421fbfabd36500f2b4f6ae23ee2ba82b8475e0563e878e81b26667b051";
++const HASH_JUGADOR = "19641b21af171ae9c0dbab6fcd02aa43fb5739d5a0ea229098e4a3c2fb07a36a";
++const HASH_PADRE = "c3b7733f6e5c687dbe64e66be4c150c7b298dd1ae496b85655a9d1328df7eca4";
++
++const jugador = (dni: string, email: string, activado = true) => ({
++  id: dni,
++  passwordHash: activado ? HASH_JUGADOR : "",
++  rol: "jugador" as const,
++  confirmado: true,
++  activado,
++  email,
++});
++
++export function crearSemilla(): Db {
++  return {
++    usuarios: [
++      { id: "profesor@demo.com", passwordHash: HASH_PROFE, rol: "profesor", confirmado: true, activado: true, email: "profesor@demo.com" },
++      { id: "padre@demo.com", passwordHash: HASH_PADRE, rol: "externo", confirmado: true, activado: true, email: "padre@demo.com" },
++      jugador("90000001", "juan@demo.com"),
++      jugador("90000002", "martin@demo.com"),
++      jugador("90000003", "hernan@demo.com"),
++      jugador("90000004", "ignacio@demo.com"),
++      jugador("90000005", "bautista@demo.com"),
++      jugador("90000006", "lautaro@demo.com", false),
++    ],
++    jugadoresGeneral: [
++      { dni: "90000001", nombre: "Juan", apellido: "Pérez", email: "juan@demo.com", fnac: "2011-03-10", colegio: "Goethe" },
++      { dni: "90000002", nombre: "Martín", apellido: "González", email: "martin@demo.com", fnac: "2012-08-21", colegio: "Goethe" },
++      { dni: "90000003", nombre: "Hernán", apellido: "Rodríguez", email: "hernan@demo.com", fnac: "2011-05-02", colegio: "Goethe" },
++      { dni: "90000004", nombre: "Ignacio", apellido: "Fagiani", email: "ignacio@demo.com", fnac: "2013-02-14", colegio: "Goethe" },
++      { dni: "90000005", nombre: "Bautista", apellido: "Álvarez", email: "bautista@demo.com", fnac: "2009-11-30", colegio: "Goethe" },
++      { dni: "90000006", nombre: "Lautaro", apellido: "Díaz", email: "lautaro@demo.com", fnac: "2011-01-20", colegio: "Goethe" },
++    ],
++    jugadoresDeportes: [
++      { idj: "90000001-DEP1", dni: "90000001", deporte: "DEP1", categoria: "Cadetes", camiseta: "10" },
++      { idj: "90000001-DEP2", dni: "90000001", deporte: "DEP2", categoria: "Cadetes", camiseta: "7" },
++      { idj: "90000002-DEP1", dni: "90000002", deporte: "DEP1", categoria: "Cadetes", camiseta: "9" },
++      { idj: "90000003-DEP1", dni: "90000003", deporte: "DEP1", categoria: "Cadetes", camiseta: "5" },
++      { idj: "90000004-DEP1", dni: "90000004", deporte: "DEP1", categoria: "Menores", camiseta: "3" },
++      { idj: "90000005-DEP1", dni: "90000005", deporte: "DEP1", categoria: "Juveniles", camiseta: "8" },
++      { idj: "90000005-DEP2", dni: "90000005", deporte: "DEP2", categoria: "Juveniles", camiseta: "11" },
++      { idj: "90000006-DEP1", dni: "90000006", deporte: "DEP1", categoria: "Cadetes", camiseta: "11" },
++    ],
++    asistencia: [
++      { fecha: "2026-11-10", deporte: "DEP1", dni: "90000001", nombre: "Juan Pérez", asistio: true },
++      { fecha: "2026-11-10", deporte: "DEP1", dni: "90000002", nombre: "Martín González", asistio: true },
++      { fecha: "2026-11-10", deporte: "DEP1", dni: "90000003", nombre: "Hernán Rodríguez", asistio: false },
++      { fecha: "2026-11-10", deporte: "DEP1", dni: "90000004", nombre: "Ignacio Fagiani", asistio: true },
++      { fecha: "2026-11-10", deporte: "DEP1", dni: "90000005", nombre: "Bautista Álvarez", asistio: true },
++    ],
++    partidos: [
++      { idp: "PAR-DEP1-Cadetes-20261003", local: "Goethe", visitante: "Colegio Norte", deporte: "DEP1", categoria: "Cadetes", fecha: "2026-10-03", hora: "15:00", golesLocal: 2, golesVisitante: 1, estado: "Finalizado" },
++      { idp: "PAR-DEP1-Cadetes-20261017", local: "Goethe", visitante: "Colegio Sur", deporte: "DEP1", categoria: "Cadetes", fecha: "2026-10-17", hora: "15:00", golesLocal: 0, golesVisitante: 0, estado: "Finalizado" },
++      { idp: "PAR-DEP1-Cadetes-20261205", local: "Goethe", visitante: "Colegio Norte", deporte: "DEP1", categoria: "Cadetes", fecha: "2026-12-05", hora: "10:00", golesLocal: 0, golesVisitante: 0, estado: "Pendiente" },
++      { idp: "PAR-DEP1-Menores-20261205", local: "Goethe", visitante: "Colegio Norte", deporte: "DEP1", categoria: "Menores", fecha: "2026-12-05", hora: "11:30", golesLocal: 0, golesVisitante: 0, estado: "Pendiente" },
++      { idp: "PAR-DEP2-Cadetes-20261212", local: "Goethe", visitante: "Colegio Sur", deporte: "DEP2", categoria: "Cadetes", fecha: "2026-12-12", hora: "09:00", golesLocal: 0, golesVisitante: 0, estado: "Pendiente" },
++    ],
++    convocatorias: [
++      { idp: "PAR-DEP1-Cadetes-20261003", dni: "90000001", convocado: true, titular: true, confirmado: "Si" },
++      { idp: "PAR-DEP1-Cadetes-20261003", dni: "90000002", convocado: true, titular: true, confirmado: "Si" },
++      { idp: "PAR-DEP1-Cadetes-20261003", dni: "90000003", convocado: true, titular: false, confirmado: "Si" },
++      { idp: "PAR-DEP1-Cadetes-20261017", dni: "90000001", convocado: true, titular: true, confirmado: "Si" },
++      { idp: "PAR-DEP1-Cadetes-20261017", dni: "90000002", convocado: true, titular: false, confirmado: "Si" },
++      { idp: "PAR-DEP1-Cadetes-20261017", dni: "90000003", convocado: false, titular: false, confirmado: "No" },
++      { idp: "PAR-DEP1-Cadetes-20261205", dni: "90000001", convocado: true, titular: true, confirmado: "" },
++      { idp: "PAR-DEP1-Cadetes-20261205", dni: "90000002", convocado: true, titular: true, confirmado: "Si" },
++      { idp: "PAR-DEP1-Cadetes-20261205", dni: "90000003", convocado: true, titular: false, confirmado: "" },
++    ],
++    estadisticasPartidos: [
++      { idp: "PAR-DEP1-Cadetes-20261003", idGoleador: "90000001", idAsistidor: "90000002" },
++      { idp: "PAR-DEP1-Cadetes-20261003", idGoleador: "90000002", idAsistidor: "" },
++    ],
++    equipos: [
++      { id: "1", nombre: "Goethe" },
++      { id: "2", nombre: "Colegio Norte" },
++    ],
++  };
++}
+diff --git a/lib/formato.ts b/lib/formato.ts
+new file mode 100644
+index 0000000..a8072d9
+--- /dev/null
++++ b/lib/formato.ts
+@@ -0,0 +1,68 @@
++// Utilidades portadas 1:1 desde Code.gs.
++import type { Categoria } from "./types";
++
++/** YYYY-MM-DD (o Date) -> DD/MM/AAAA, como formatearFecha() del original. */
++export function formatearFecha(fecha: string | Date | null | undefined): string {
++  if (!fecha) return "";
++  if (fecha instanceof Date) {
++    const dia = String(fecha.getDate()).padStart(2, "0");
++    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
++    return `${dia}/${mes}/${fecha.getFullYear()}`;
++  }
++  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(fecha);
++  return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : fecha;
++}
++
++/** HH:MM, como formatearHora() del original. */
++export function formatearHora(hora: string | Date | null | undefined): string {
++  if (!hora) return "";
++  if (hora instanceof Date) {
++    return `${String(hora.getHours()).padStart(2, "0")}:${String(hora.getMinutes()).padStart(2, "0")}`;
++  }
++  return hora;
++}
++
++/** Fecha local de hoy en YYYY-MM-DD. */
++export function hoyIso(): string {
++  const d = new Date();
++  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
++}
++
++// Copia 1:1 del original: SHA-256 con sal fija. Se reemplaza por Supabase Auth en la etapa 2.
++const SALT = "GoetheFieldStats_2026_MVP!";
++
++export async function hashPassword(password: string): Promise<string> {
++  const datos = new TextEncoder().encode(password + SALT);
++  const digest = await crypto.subtle.digest("SHA-256", datos);
++  return Array.from(new Uint8Array(digest))
++    .map((b) => b.toString(16).padStart(2, "0"))
++    .join("");
++}
++
++/**
++ * Categoría por fecha de nacimiento, igual que calcularCategoria() del original
++ * (incluido su comportamiento: el ajuste por corte de julio del comentario original no
++ * modifica el año escolar; solo cambia los límites entre categorías).
++ */
++export function calcularCategoria(fnac: string | Date | null | undefined): Categoria {
++  if (!fnac) return "Cadetes";
++  const fecha = fnac instanceof Date ? fnac : new Date(`${fnac}T00:00:00`);
++  if (isNaN(fecha.getTime())) return "Cadetes";
++
++  const mesNac = fecha.getMonth() + 1;
++  const anioNac = fecha.getFullYear();
++  const anioEscolar = new Date().getFullYear() - anioNac - 11;
++  const esGrande = mesNac >= 7;
++
++  if (anioEscolar < 1) return "Menores";
++  if (anioEscolar > 6) return "Juveniles";
++
++  if (esGrande) {
++    if (anioEscolar <= 2) return "Menores";
++    if (anioEscolar <= 4) return "Cadetes";
++    return "Juveniles";
++  }
++  if (anioEscolar <= 3) return "Menores";
++  if (anioEscolar <= 5) return "Cadetes";
++  return "Juveniles";
++}
+diff --git a/lib/pantallas.ts b/lib/pantallas.ts
+new file mode 100644
+index 0000000..55cdcbb
+--- /dev/null
++++ b/lib/pantallas.ts
+@@ -0,0 +1,36 @@
++// Mapa de pantallas: cada <div class="screen" id="screen-..."> del index.html original
++// pasa a ser una ruta de Next.js. `hito` indica en qué hito de la etapa 1 se porta.
++
++export interface Pantalla {
++  ruta: string;
++  original: string; // id de la pantalla en index.html
++  titulo: string;
++  volver: string | null; // destino del botón "← Volver" del original
++  hito: string;
++}
++
++export const PANTALLAS: Pantalla[] = [
++  { ruta: "/", original: "screen-login", titulo: "Iniciar sesión", volver: null, hito: "1.2" },
++  { ruta: "/registro/jugador", original: "screen-registro-jugador", titulo: "Activar cuenta de jugador", volver: "/", hito: "1.2" },
++  { ruta: "/registro/externo", original: "screen-registro-externo", titulo: "Registro padres", volver: "/", hito: "1.2" },
++  { ruta: "/confirmar", original: "doGet(?confirmar=)", titulo: "Confirmación de correo", volver: "/", hito: "1.2" },
++  { ruta: "/admin", original: "screen-admin", titulo: "Panel de control", volver: "/", hito: "1.3" },
++  { ruta: "/admin/alta-alumno", original: "screen-registro", titulo: "Alta de alumno", volver: "/admin", hito: "1.3" },
++  { ruta: "/admin/asistencia", original: "screen-asistencia", titulo: "Asistencia", volver: "/admin", hito: "1.3" },
++  { ruta: "/admin/partidos", original: "screen-partidos-menu", titulo: "Gestión de partidos", volver: "/admin", hito: "1.3" },
++  { ruta: "/admin/partidos/nuevo", original: "screen-añadir-partido", titulo: "Nuevo partido", volver: "/admin/partidos", hito: "1.3" },
++  { ruta: "/admin/convocatoria", original: "screen-convocar", titulo: "Convocatoria", volver: "/admin", hito: "1.3" },
++  { ruta: "/admin/cargar-datos", original: "screen-cargar-datos", titulo: "Cargar resultado", volver: "/admin/partidos", hito: "1.3" },
++  { ruta: "/admin/estadisticas", original: "screen-estadisticas-profe", titulo: "Estadísticas generales", volver: "/admin", hito: "1.4" },
++  { ruta: "/jugador", original: "screen-jugador", titulo: "Panel del jugador", volver: "/", hito: "1.4" },
++  { ruta: "/jugador/convocatorias", original: "screen-mis-convocatorias", titulo: "Mis convocatorias", volver: "/jugador", hito: "1.4" },
++  { ruta: "/jugador/estadisticas", original: "screen-mis-estadisticas", titulo: "Mis estadísticas", volver: "/jugador", hito: "1.4" },
++  { ruta: "/jugador/dashboard", original: "screen-dashboard-general-jugador", titulo: "Dashboard general", volver: "/jugador", hito: "1.4" },
++  { ruta: "/externo", original: "screen-externo", titulo: "Dashboard público", volver: "/", hito: "1.4" },
++];
++
++export function pantalla(ruta: string): Pantalla {
++  const p = PANTALLAS.find((x) => x.ruta === ruta);
++  if (!p) throw new Error(`Pantalla no registrada: ${ruta}`);
++  return p;
++}
+diff --git a/lib/sesion.tsx b/lib/sesion.tsx
+new file mode 100644
+index 0000000..ac04d28
+--- /dev/null
++++ b/lib/sesion.tsx
+@@ -0,0 +1,67 @@
++"use client";
++// Estado global de la app, equivalente a las variables globales de funcionees.html:
++// rol y DNI del usuario logueado, deporte activo del panel del profesor y overlay de carga.
++// Copia 1:1: la sesión vive en el navegador, sin autenticación real (etapa 2: Supabase Auth).
++import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
++import type { DeporteId, Rol } from "./types";
++
++interface Sesion {
++  rol: Rol | null;
++  dni: string; // dniJugadorActual del original
++}
++
++interface Contexto {
++  sesion: Sesion;
++  iniciarSesion: (rol: Rol, dni?: string) => void;
++  cerrarSesion: () => void;
++  deporteAdmin: DeporteId; // selector-deporte del panel del profesor
++  setDeporteAdmin: (d: DeporteId) => void;
++  cargando: boolean;
++  setCargando: (v: boolean) => void;
++}
++
++const CLAVE = "fieldstats-sesion";
++const SIN_SESION: Sesion = { rol: null, dni: "" };
++const Ctx = createContext<Contexto | null>(null);
++
++export function ProveedorSesion({ children }: { children: ReactNode }) {
++  const [sesion, setSesion] = useState<Sesion>(SIN_SESION);
++  const [deporteAdmin, setDeporteAdmin] = useState<DeporteId>("DEP1");
++  const [cargando, setCargando] = useState(false);
++
++  useEffect(() => {
++    try {
++      const guardada = window.sessionStorage.getItem(CLAVE);
++      if (guardada) setSesion(JSON.parse(guardada) as Sesion);
++    } catch {
++      // sin sessionStorage: la sesión dura hasta recargar
++    }
++  }, []);
++
++  const guardar = useCallback((s: Sesion) => {
++    setSesion(s);
++    try {
++      window.sessionStorage.setItem(CLAVE, JSON.stringify(s));
++    } catch {
++      // ignorar
++    }
++  }, []);
++
++  const iniciarSesion = useCallback((rol: Rol, dni = "") => guardar({ rol, dni }), [guardar]);
++  const cerrarSesion = useCallback(() => guardar(SIN_SESION), [guardar]);
++
++  return (
++    <Ctx.Provider value={{ sesion, iniciarSesion, cerrarSesion, deporteAdmin, setDeporteAdmin, cargando, setCargando }}>
++      {children}
++      <div id="loading-overlay" style={{ display: cargando ? "flex" : "none" }}>
++        Cargando...
++      </div>
++    </Ctx.Provider>
++  );
++}
++
++export function useSesion(): Contexto {
++  const ctx = useContext(Ctx);
++  if (!ctx) throw new Error("useSesion debe usarse dentro de ProveedorSesion");
++  return ctx;
++}
+diff --git a/lib/types.ts b/lib/types.ts
+new file mode 100644
+index 0000000..377ae2d
+--- /dev/null
++++ b/lib/types.ts
+@@ -0,0 +1,101 @@
++// Modelo de datos de FieldStats 5.3 (fútbol/handball), portado 1:1 desde las hojas del Google Sheets.
++// Cada interfaz corresponde a una hoja. Los "Si"/"No" de la planilla pasan a booleanos,
++// salvo la confirmación de convocatoria, que tiene tres estados ('' = sin responder).
++
++export type Rol = "jugador" | "externo" | "profesor";
++export type DeporteId = "DEP1" | "DEP2";
++export type Categoria = "Menores" | "Cadetes" | "Juveniles";
++export type EstadoPartido = "Pendiente" | "Finalizado";
++export type Confirmacion = "" | "Si" | "No";
++
++export const DEPORTES: Record<DeporteId, string> = {
++  DEP1: "Fútbol",
++  DEP2: "Handball",
++};
++
++export const CATEGORIAS: Categoria[] = ["Menores", "Cadetes", "Juveniles"];
++
++/** Hoja USUARIOS. `id` es el DNI (jugadores) o el email (externos). */
++export interface Usuario {
++  id: string;
++  passwordHash: string; // '' mientras el jugador no activó su cuenta
++  rol: Rol;
++  confirmado: boolean;
++  activado: boolean;
++  email: string;
++}
++
++/** Hoja JUGADORES_GENERAL. */
++export interface JugadorGeneral {
++  dni: string;
++  nombre: string;
++  apellido: string;
++  email: string;
++  fnac: string; // YYYY-MM-DD
++  colegio: string;
++}
++
++/** Hoja JUGADORES_DEPORTES. `idj` = `${dni}-${deporte}`. */
++export interface JugadorDeporte {
++  idj: string;
++  dni: string;
++  deporte: DeporteId;
++  categoria: Categoria;
++  camiseta: string;
++}
++
++/** Hoja Asistencia. Una fila por jugador, deporte y día. */
++export interface RegistroAsistencia {
++  fecha: string; // YYYY-MM-DD
++  deporte: DeporteId;
++  dni: string;
++  nombre: string;
++  asistio: boolean;
++}
++
++/** Hoja PARTIDOS. `idp` = `PAR-${deporte}-${categoria}-${AAAAMMDD}`. */
++export interface Partido {
++  idp: string;
++  local: string;
++  visitante: string;
++  deporte: DeporteId;
++  categoria: Categoria;
++  fecha: string; // YYYY-MM-DD
++  hora: string; // HH:MM
++  golesLocal: number;
++  golesVisitante: number;
++  estado: EstadoPartido;
++}
++
++/** Hoja CONVOCATORIAS. */
++export interface Convocatoria {
++  idp: string;
++  dni: string;
++  convocado: boolean;
++  titular: boolean;
++  confirmado: Confirmacion;
++}
++
++/** Hoja ESTADISTICAS_PARTIDOS. Una fila por gol de Goethe. */
++export interface EstadisticaGol {
++  idp: string;
++  idGoleador: string;
++  idAsistidor: string; // '' si no hubo asistencia
++}
++
++/** Hoja EQUIPOS. Existe en la planilla pero el código original no la usa. */
++export interface Equipo {
++  id: string;
++  nombre: string;
++}
++
++export interface Db {
++  usuarios: Usuario[];
++  jugadoresGeneral: JugadorGeneral[];
++  jugadoresDeportes: JugadorDeporte[];
++  asistencia: RegistroAsistencia[];
++  partidos: Partido[];
++  convocatorias: Convocatoria[];
++  estadisticasPartidos: EstadisticaGol[];
++  equipos: Equipo[];
++}
+-- 
+2.43.0
+
